@@ -69,9 +69,11 @@ void handleArgs(int argc, char** argv, uint32_t* ballCount, uint32_t* threadCoun
 
 int main(int argc, char** argv) {
 	World w;
+	Texture2D tex;
 	InitWindow(WIN_WIDTH, WIN_HEIGHT, "test");
 	handleArgs(argc, argv, &w.ballCount, &w.threadCount);
 	generateWorld(&w);
+	tex = LoadTexture("res/Sprite-0001.png");
 
 	SetTargetFPS(60);
 
@@ -81,10 +83,12 @@ int main(int argc, char** argv) {
 		ClearBackground(DARKGREEN);
 		DrawFPS(0, 0);
 		for (uint32_t i = 0; i < w.ballCount; i++) {
-			DrawCircleV(w.balls[i].pos, w.balls[i].radius, w.balls[i].col);
+			DrawTextureEx(tex, Vector2Subtract(w.balls[i].pos, (Vector2){w.balls[i].radius, w.balls[i].radius}), 0.f, (w.balls[i].radius / 32.0f), w.balls[i].col);
+			// DrawCircleV(w.balls[i].pos, w.balls[i].radius, w.balls[i].col);
 		}
 		EndDrawing();
 	}
+	UnloadTexture(tex);
 	CloseWindow();
 	exit(EXIT_SUCCESS);
 }
