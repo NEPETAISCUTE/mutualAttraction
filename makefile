@@ -1,3 +1,5 @@
+RM+=-rfv
+
 CC     := gcc
 CFLAGS := -Wall -O3
 DFLAGS := -Wall -g
@@ -16,29 +18,30 @@ SOURCESPATHS := $(wildcard $(SRC)/*.c)
 OBJECTS      := $(SOURCESPATHS:$(SRC)/%.c=$(BUILD)/%.o)
 DEPS         := $(SOURCESPATHS:$(SRC)/%.c=$(DEPSDIR)/%.d)
 
+build: $(BINARY)
+
 $(BINARY): $(OBJECTS)
-	$(LD) $(CFLAGS) -I$(INCLUDE) $(OBJECTS) -o $(BINARY) $(LIBS) 
+	@echo Linking object into $@
+	@$(LD) $(CFLAGS) -I$(INCLUDE) $(OBJECTS) -o $@ $(LIBS) 
 
 install: $(BINARY)
-	cp $(BINARY) /usr/bin/
+	@cp -uv $(BINARY) /usr/bin/
 
 -include $(DEPSDIR)/$(DEPS)
 $(BUILD)/%.o: $(SRC)/%.c
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -I$(INCLUDE) -c $< -o $@ -MMD
+	@mkdir -p $(dir $@)
+	@echo Compiling $< into $@
+	@$(CC) $(CFLAGS) -I$(INCLUDE) -c $< -o $@ -MMD
 
 clean:
-	$(RM) $(BUILD)/*
+	@$(RM) $(BUILD)
 
 wipe: clean
-	$(RM) $(BINARY)
+	@$(RM) $(BINARY)
 
-re: fullclean
-	$(MAKE) $(BINARY)
+re: wipe build
 
 run: $(BINARY)
 	./$(BINARY)
 
-rerun:
-	$(MAKE) re
-	$(MAKE) run
+rerun: re run
