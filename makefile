@@ -24,6 +24,7 @@ install: $(BINARY)
 
 -include $(DEPSDIR)/$(DEPS)
 $(BUILD)/%.o: $(SRC)/%.c
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -I$(INCLUDE) -c $< -o $@ -MMD
 
 clean:
