@@ -84,7 +84,6 @@ int main(int argc, char** argv) {
 		ClearBackground(DARKGREEN);
 		for (uint32_t i = 0; i < w.ballCount; i++) {
 			DrawTextureEx(tex, Vector2Subtract(w.balls[i].pos, (Vector2){w.balls[i].radius, w.balls[i].radius}), 0.f, (w.balls[i].radius / 32.0f), w.balls[i].col);
-			DrawCircleV(w.balls[i].pos, w.balls[i].radius, w.balls[i].col);
 		}
 		DrawFPS(0, 0);
 		EndDrawing();
