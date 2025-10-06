@@ -2,4 +2,5 @@ build/*
 .clang-format
 .ccls
 .ccls-cache
+.vscode
 mutualAttraction
