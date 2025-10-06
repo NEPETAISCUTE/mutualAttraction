@@ -22,8 +22,8 @@
  *
  */
 
-const unsigned int WIN_WIDTH = 800;
-const unsigned int WIN_HEIGHT = 600;
+const unsigned int WIN_WIDTH = 1920;
+const unsigned int WIN_HEIGHT = 1200;
 
 const unsigned int DEFAULT_BALL_COUNT = 32;
 const unsigned int DEFAULT_THREAD_COUNT = 1;
@@ -70,8 +70,9 @@ void handleArgs(int argc, char** argv, uint32_t* ballCount, uint32_t* threadCoun
 int main(int argc, char** argv) {
 	World w;
 	Texture2D tex;
-	InitWindow(WIN_WIDTH, WIN_HEIGHT, "test");
 	handleArgs(argc, argv, &w.ballCount, &w.threadCount);
+	SetConfigFlags(FLAG_FULLSCREEN_MODE);
+	InitWindow(WIN_WIDTH, WIN_HEIGHT, "test");
 	generateWorld(&w);
 	tex = LoadTexture("res/Sprite-0001.png");
 
@@ -81,11 +82,11 @@ int main(int argc, char** argv) {
 		updateWorld(&w);
 		BeginDrawing();
 		ClearBackground(DARKGREEN);
-		DrawFPS(0, 0);
 		for (uint32_t i = 0; i < w.ballCount; i++) {
 			DrawTextureEx(tex, Vector2Subtract(w.balls[i].pos, (Vector2){w.balls[i].radius, w.balls[i].radius}), 0.f, (w.balls[i].radius / 32.0f), w.balls[i].col);
-			// DrawCircleV(w.balls[i].pos, w.balls[i].radius, w.balls[i].col);
+			DrawCircleV(w.balls[i].pos, w.balls[i].radius, w.balls[i].col);
 		}
+		DrawFPS(0, 0);
 		EndDrawing();
 	}
 	UnloadTexture(tex);

@@ -1,5 +1,6 @@
 #include "world.h"
 
+#include <math.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,6 +20,9 @@ const uint32_t MAX_THREAD_COUNT = 128;
 void attractBallsWork(void* arg) {
 	AttractBallWorkArg* warg = (AttractBallWorkArg*)arg;
 	for (uint32_t i = warg->idxStart; i < warg->idxEnd; i++) {
+		updateBallTS(&warg->w->balls[i]);
+	}
+	for (uint32_t i = warg->idxStart; i < warg->idxEnd; i++) {
 		for (uint32_t j = 0; j < warg->w->ballCount; j++) {
 			if (i == j) continue;
 			attractBalls(&warg->w->balls[i], &warg->w->balls[j]);
@@ -26,13 +30,14 @@ void attractBallsWork(void* arg) {
 	}
 }
 
+double timeRecord[100];
+size_t timeRecordIdx = 0;
+size_t timesRecorded = 0;
+
 void updateWorld(World* w) {
 	pthread_t threads[MAX_THREAD_COUNT];
 	AttractBallWorkArg args[MAX_THREAD_COUNT];
 
-	for (uint32_t i = 0; i < w->ballCount; i++) {
-		updateBall(&w->balls[i]);
-	}
 	double timeStart = GetTime();
 	for (uint32_t i = 0; i < w->threadCount; i++) {
 		args[i].w = w;
@@ -42,13 +47,29 @@ void updateWorld(World* w) {
 			args[i].idxEnd = (i + 1) * (w->ballCount / w->threadCount) + (w->ballCount % w->threadCount);
 		else
 			args[i].idxEnd = (i + 1) * (w->ballCount / w->threadCount);
-		pthread_create(&threads[i], NULL, attractBallsWork, &args[i]);
+		pthread_create(&threads[i], NULL, (void*)attractBallsWork, &args[i]);
 	}
 
 	for (uint32_t i = 0; i < w->threadCount; i++) {
 		pthread_join(threads[i], NULL);
 	}
 
+	for(uint32_t i = 0; i < w->ballCount; i++) {
+		finishUpdateBall(&w->balls[i]);
+	}
+	double timeEnd = GetTime();
+	timeRecord[timeRecordIdx++] = timeEnd - timeStart;
+	if(timeRecordIdx >= 100) timeRecordIdx = 0;
+	timesRecorded++;
+
+	if(timesRecorded >= 100) {
+		double sum = 0.0;
+		for(size_t i = 0; i < 100; i++) {
+			sum += timeRecord[i];
+		}
+		sum /= 100;
+		printf("average: %f\n", sum);
+	}
 	/*
 	for (uint32_t i = 0; i < w->ballCount; i++) {
 		for (uint32_t j = 0; j < w->ballCount; j++) {

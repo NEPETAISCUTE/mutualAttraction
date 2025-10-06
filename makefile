@@ -17,14 +17,14 @@ OBJECTS      := $(SOURCESPATHS:$(SRC)/%.c=$(BUILD)/%.o)
 DEPS         := $(SOURCESPATHS:$(SRC)/%.c=$(DEPSDIR)/%.d)
 
 $(BINARY): $(OBJECTS)
-	$(LD) $(DFLAGS) -I$(INCLUDE) $(OBJECTS) -o $(BINARY) $(LIBS) 
+	$(LD) $(CFLAGS) -I$(INCLUDE) $(OBJECTS) -o $(BINARY) $(LIBS) 
 
 install: $(BINARY)
 	cp $(BINARY) /usr/bin/
 
 -include $(DEPSDIR)/$(DEPS)
 $(BUILD)/%.o: $(SRC)/%.c
-	$(CC) $(DFLAGS) -I$(INCLUDE) -c $< -o $@ -MMD
+	$(CC) $(CFLAGS) -I$(INCLUDE) -c $< -o $@ -MMD
 
 clean:
 	$(RM) $(BUILD)/*
